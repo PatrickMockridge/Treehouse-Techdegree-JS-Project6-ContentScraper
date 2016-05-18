@@ -5,6 +5,10 @@
 
 var request = require("request");
 var cheerio = require("cheerio");
+var json2csv = require('json2csv');
+var fs = require('fs');
+var $ = require("jquery");
+
 var  url = "http://shirts4mike.com";
 var shirtsUrls = [];
 request(url, function (error, response, body) {
@@ -14,35 +18,47 @@ request(url, function (error, response, body) {
       shirtsUrls.push($(this).attr("href"))
     }
     );
-    console.log(shirtsUrls);
-  } else {
+  }
+  else {
     console.log("We’ve encountered an error: " + error);
   }
+  console.log(shirtsUrls);
+  return shirtsUrls;
 });
-
-
-// var scrape2csv = require('scrape2csv');
-// //create variable so that header is only displayed once
-// //var count =0;
-// $.each(shirtsUrls, function(index) {
-//   var localShirtsUrl = (url+$(this)[index]);
-// //each article of the page will go through this
-// var handler = function($, elem, index){
-// 	var title = $(elem).find(".shirt-details > h1").text();
-//   var price = $(elem).find(".price").text();
-//   var imageUrl = $(elem).find(".shirt-picture > span > img").attr("src");
-//   var dateTime = new Date();
-// 	//returning a new row for the csv
-// 	return [title, price, imageURL,localShirtsUrl, dateTime];
-// //if (count == 0) {
-// var header = ["Title", "Price", "ImageURL", "URL", "Time"];
-// //count++;
-// //return count;
-// //}
-// //else {
-//   //var header = null;
-// //}
-// scrape2csv.scrape("data/data.csv", localShirtsUrl, jquery_selector, handler, header);
-//
-// }
-// });
+var allShirts = new Array();
+var fields = ['Title', 'Price', 'URL', 'Time'];
+console.log(url+"/"+shirtsUrls[1])
+setTimeout(function(){for ( var i = 0; i < shirtsUrls.length; i++) {
+    var localShirtsUrl = (url+"/"+shirtsUrls[i]);
+    request(localShirtsUrl, function (error, response, body) {
+      if (!error) {
+        var $ = cheerio.load(body)      ;
+     var title = $(body).find(".shirt-details > h1").text();
+     var price = $(body).find(".price").text();
+     //var imageUrl = $(body).find(".shirt-picture > span > img").attr("src");
+     var dateTime = new Date();
+     var shirtObject = {}
+     shirtObject.Title = title;
+     shirtObject.Price = price;
+     //shirtObject.ImageURL = imageURL;
+     shirtObject.url = url+"/"shirtsUrls[i];
+     shirtObject.Time = dateTime;
+     allShirts.push(shirtObject);
+     console.log(allShirts);
+     console.log(shirtObject);
+     return allShirts;
+   }
+ else {
+   console.log("We’ve encountered an error: " + error);
+ }
+});
+}}, 5000);
+console.log(allShirts);
+setTimeout(function() { json2csv({ data: allShirts, fields: fields }, function(err, csv) {
+  if (err) console.log(err);
+  fs.writeFile('file.csv', csv, function(err) {
+    if (err) throw err;
+    console.log('file saved');
+  });
+});
+}, 5000);
