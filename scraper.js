@@ -21,7 +21,7 @@ request(url, function (error, response, body) {
     var $ = cheerio.load(body);
     //
     $(".products > li > a").each(function (index) {
-      shirtsUrls.push($(this).attr("href"))
+      shirtsUrls.push($(this).attr("href"));
     }
     );
   }
@@ -31,7 +31,7 @@ request(url, function (error, response, body) {
   return shirtsUrls;
 });
 var allShirts = new Array();
-var fields = ['Title', 'Price', 'ImageURL', 'URL', 'Time']; //CSV header
+var fields = ['Title', 'Price', 'ImageURL', 'url', 'Time']; //CSV header
 // pass function after set time to loop through the scraped shirt links and scrape each page
 setTimeout(function(){for ( var i = 0; i < shirtsUrls.length; i++) {
     var localShirtsUrl = (url+"/"+ shirtsUrls[i]);
@@ -62,19 +62,20 @@ setTimeout(function(){for ( var i = 0; i < shirtsUrls.length; i++) {
 }}, 5000);// after some time to let the first scrape take place
 console.log(allShirts);
 setTimeout(function() {
+  console.log(allShirts);
   //get today's date courtesy of http://stackoverflow.com/questions/12409299/how-to-get-current-formatted-date-dd-mm-yyyy-in-javascript-and-append-it-to-an-i
   var today = new Date();
    var dd = today.getDate();
    var mm = today.getMonth()+1; //January is 0!
    var yyyy = today.getFullYear();
    if(dd<10){
-       dd='0'+dd
+       dd='0'+dd;
    }
    if(mm<10){
-       mm='0'+mm
+       mm='0'+mm;
    }
    var toDay = dd+'-'+mm+'-'+yyyy;
-   
+
    //make a new data folder if one doesn't already exist
    var dir = './data';
    if (!fs.existsSync(dir)){
