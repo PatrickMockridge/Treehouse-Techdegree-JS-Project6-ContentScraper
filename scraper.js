@@ -29,19 +29,19 @@ var allShirts = new Array();
 var fields = ['Title', 'Price', 'URL', 'Time'];
 console.log(url+"/"+shirtsUrls[1])
 setTimeout(function(){for ( var i = 0; i < shirtsUrls.length; i++) {
-    var localShirtsUrl = (url+"/"+shirtsUrls[i]);
+    var localShirtsUrl = (url+"/"+ shirtsUrls[i]);
     request(localShirtsUrl, function (error, response, body) {
       if (!error) {
         var $ = cheerio.load(body)      ;
-     var title = $(body).find(".shirt-details > h1").text();
-     var price = $(body).find(".price").text();
-     //var imageUrl = $(body).find(".shirt-picture > span > img").attr("src");
+     var title = $('body').find(".shirt-details > h1").text();
+     var price = $('body').find(".price").text();
+     var imageUrl = $('.shirt-picture').find("img").attr("src");
      var dateTime = new Date();
      var shirtObject = {}
      shirtObject.Title = title;
      shirtObject.Price = price;
-     //shirtObject.ImageURL = imageURL;
-     shirtObject.url = url+"/"shirtsUrls[i];
+     shirtObject.ImageURL = imageUrl;
+     shirtObject.url = localShirtsUrl;
      shirtObject.Time = dateTime;
      allShirts.push(shirtObject);
      console.log(allShirts);
