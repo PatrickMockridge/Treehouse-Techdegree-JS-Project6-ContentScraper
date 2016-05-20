@@ -15,13 +15,38 @@ var  url = "http://shirts4mike.com";
 //create array in which to push shirts urls
 var shirtsUrls = [];
 //make http request
+var allShirts = new Array();
+var fields = ['Title', 'Price', 'ImageURL', 'url', 'Time']; //CSV header
 request(url, function (error, response, body) {
   if (!error) {
     // use cheerio to traverse DOM
     var $ = cheerio.load(body);
-    //
     $(".products > li > a").each(function (index) {
-      shirtsUrls.push($(this).attr("href"));
+      var localShirtsUrl = (url+"/"+ $(this).attr("href"));
+      //make http request
+      request(localShirtsUrl, function (error, response, body) {
+        if (!error) {
+          //load into cheero to enable DOM traversal
+          var $ = cheerio.load(body);
+          //traverse the DOM to get the necessary info
+       var title = $('body').find(".shirt-details > h1").text();
+       var price = $('body').find(".price").text();
+       var imageUrl = $('.shirt-picture').find("img").attr("src");
+       var dateTime = new Date();
+       //create JSON object for each shirt
+       var shirtObject = {}
+       shirtObject.Title = title;
+       shirtObject.Price = price;
+       shirtObject.ImageURL = imageUrl;
+       shirtObject.url = localShirtsUrl;
+       shirtObject.Time = dateTime;
+       allShirts.push(shirtObject);
+       return allShirts;
+     }
+   else {
+     console.log("It's a Trap: " + error);
+   }
+  });
     }
     );
   }
@@ -30,37 +55,7 @@ request(url, function (error, response, body) {
   }
   return shirtsUrls;
 });
-var allShirts = new Array();
-var fields = ['Title', 'Price', 'ImageURL', 'url', 'Time']; //CSV header
-// pass function after set time to loop through the scraped shirt links and scrape each page
-setTimeout(function(){for ( var i = 0; i < shirtsUrls.length; i++) {
-    var localShirtsUrl = (url+"/"+ shirtsUrls[i]);
-    //make http request
-    request(localShirtsUrl, function (error, response, body) {
-      if (!error) {
-        //load into cheero to enable DOM traversal
-        var $ = cheerio.load(body);
-        //traverse the DOM to get the necessary info
-     var title = $('body').find(".shirt-details > h1").text();
-     var price = $('body').find(".price").text();
-     var imageUrl = $('.shirt-picture').find("img").attr("src");
-     var dateTime = new Date();
-     //create JSON object for each shirt
-     var shirtObject = {}
-     shirtObject.Title = title;
-     shirtObject.Price = price;
-     shirtObject.ImageURL = imageUrl;
-     shirtObject.url = localShirtsUrl;
-     shirtObject.Time = dateTime;
-     allShirts.push(shirtObject);
-     return allShirts;
-   }
- else {
-   console.log("It's a Trap: " + error);
- }
-});
-}}, 5000);// after some time to let the first scrape take place
-console.log(allShirts);
+
 setTimeout(function() {
   console.log(allShirts);
   //get today's date courtesy of http://stackoverflow.com/questions/12409299/how-to-get-current-formatted-date-dd-mm-yyyy-in-javascript-and-append-it-to-an-i
@@ -89,4 +84,4 @@ setTimeout(function() {
     console.log('file saved');
   });
 });
-}, 12000);//after more time to let the first two scrapes take place
+}, 5000);//after more time to let the first two scrapes take place
