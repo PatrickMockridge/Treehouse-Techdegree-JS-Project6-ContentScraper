@@ -3,8 +3,13 @@
 // request as an easy way to make http calls
 var request = require("request");
 // cheerio for navigating the DOM
+// I decided to use Cheerio as a scraping tool because it allowed me to traverse the DOM in JQuery.
+// Cheerio thus made it much easier to code a solution.
 var cheerio = require("cheerio");
 // json 2 csv for converting the scraped data into a CSV file. JSON created natively.
+// I decided to use this package because of how straightforward and easy it was to grasp how to readily
+// I was able to convert a Javascript syntax into the required CSV file.
+// json2csv is also well supported and widely used
 var json2csv = require('json2csv');
 //fs for creating folders and files
 var fs = require('fs');
@@ -55,14 +60,14 @@ request(url, function (error, response, body) {
           if(mm<10){
               mm='0'+mm;
           }
-          var toDay = dd+'-'+mm+'-'+yyyy;
-
+          var toDay = yyyy+'-'+mm+'-'+dd;
           //make a new data folder if one doesn't already exist
           var dir = './data';
           if (!fs.existsSync(dir)){
             fs.mkdirSync(dir);
           }
-          //turn the shirts JSON file into a shirts CSV file with today's date as a file name
+          //turn the shirts JSON file into a shirts CSV file with today's date as a file name.
+
          json2csv({ data: allShirts, fields: fields }, function(err, csv) {
          if (err) console.log(err);
          fs.writeFile( dir + "/" + toDay + '.csv', csv, function(err) {
@@ -74,13 +79,13 @@ request(url, function (error, response, body) {
        return allShirts;
      }
    else {
-     console.log("It's a Trap: " + error);
+     console.log(error);
    }
   });
     }
     );
   }
   else {
-    console.log("We have an error captain: " + error);
+    console.log(error);
   }
 });
