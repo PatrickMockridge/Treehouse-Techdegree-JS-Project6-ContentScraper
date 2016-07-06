@@ -79,13 +79,15 @@ request(url, function (error, response, body) {
        return allShirts;
      }
    else {
-     console.log(error);
+     console.log(error.message);
+     console.log('The scraper could not not scrape data from' + url + 'there is either a problem with your internet connection or the site may be down');
    }
   });
     }
     );
   }
   else {
-    console.log(error);
-  }
+    console.log(error.message);
+    console.log('The scraper could not not scrape data from' + url + 'there is either a problem with your internet connection or the site may be down');
+    }
 });
