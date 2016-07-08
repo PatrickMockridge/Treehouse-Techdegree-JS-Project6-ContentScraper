@@ -23,7 +23,9 @@ var cheerio = require("cheerio");
   json2csv is also well supported and widely used
  */
 var json2csv = require('json2csv');
-fs for creating folders and files
+/**
+ fs for creating folders and files
+ */
 var fs = require('fs');
 /**
  my favourite website of all time
