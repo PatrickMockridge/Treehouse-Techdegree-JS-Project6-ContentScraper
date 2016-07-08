@@ -7,7 +7,8 @@ var moment = require('moment');
 var request = require("request");
 // cheerio for navigating the DOM
 // I decided to use Cheerio as a scraping tool because it allowed me to traverse the DOM in JQuery.
-// Cheerio thus made it much easier to code a solution.
+// Cheerio thus made it much easier to code a solution using a standard library that I am already familiar with
+// The formatting of the cheerio object also makes it simple to implement
 var cheerio = require("cheerio");
 // json 2 csv for converting the scraped data into a CSV file. JSON created natively.
 // I decided to use this package because of how straightforward and easy it was to grasp how to readily
