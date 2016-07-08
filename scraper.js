@@ -1,4 +1,7 @@
 'use strict';
+//momentjs is a convenience library for managing dates and times
+//added following comments that my date/time would be better if in an easier to read format
+var moment = require('moment');
 // require necessary npm packages
 // request as an easy way to make http calls
 var request = require("request");
@@ -13,12 +16,8 @@ var cheerio = require("cheerio");
 var json2csv = require('json2csv');
 //fs for creating folders and files
 var fs = require('fs');
-//jquery for jquery
-var $ = require("jquery");
 // my favourite website of all time
-var  url = "http://shirts4mike.com";
-//create array in which to push shirts urls
-var shirtsUrls = [];
+var  url = "http://shirts4mike.com/shirts.php";
 //make http request
 var allShirts = new Array();
 var fields = ['Title', 'Price', 'ImageURL', 'url', 'Time']; //CSV header
@@ -29,7 +28,7 @@ request(url, function (error, response, body) {
     // total number of shirts on the page
     var finished = $(".products > li > a").length;
     $(".products > li > a").each(function (index) {
-      var localShirtsUrl = (url+"/"+ $(this).attr("href"));
+      var localShirtsUrl = ("http://shirts4mike.com/"+ $(this).attr("href"));
       //make http request
       request(localShirtsUrl, function (error, response, body) {
         if (!error) {
@@ -39,28 +38,17 @@ request(url, function (error, response, body) {
        var title = $('body').find(".shirt-details > h1").text();
        var price = $('body').find(".price").text();
        var imageUrl = $('.shirt-picture').find("img").attr("src");
-       var dateTime = new Date();
        //create JSON object for each shirt
        var shirtObject = {}
        shirtObject.Title = title;
        shirtObject.Price = price;
        shirtObject.ImageURL = imageUrl;
        shirtObject.url = localShirtsUrl;
-       shirtObject.Time = dateTime;
+       shirtObject.Time = moment().format('MMMM Do YYYY, h:mm:ss a');
        allShirts.push(shirtObject);
        if (allShirts.length == finished) {
          //get today's date courtesy of http://stackoverflow.com/questions/12409299/how-to-get-current-formatted-date-dd-mm-yyyy-in-javascript-and-append-it-to-an-i
-         var today = new Date();
-          var dd = today.getDate();
-          var mm = today.getMonth()+1; //January is 0!
-          var yyyy = today.getFullYear();
-          if(dd<10){
-              dd='0'+dd;
-          }
-          if(mm<10){
-              mm='0'+mm;
-          }
-          var toDay = yyyy+'-'+mm+'-'+dd;
+         var toDay = moment().format('YYYY[-]MM[-]DD')
           //make a new data folder if one doesn't already exist
           var dir = './data';
           if (!fs.existsSync(dir)){
@@ -81,6 +69,15 @@ request(url, function (error, response, body) {
    else {
      console.log(error.message);
      console.log('The scraper could not not scrape data from' + url + 'there is either a problem with your internet connection or the site may be down');
+     // create new date for log file
+     var loggerDate = new Date();
+     // create message as a variable
+     var errLog = '[' + loggerDate + '] ' + error.message + '\n';
+     // when the error occurs, log that to the error logger file
+     fs.appendFile('scraper-error.log', errLog, function (err) {
+       if (err) throw err;
+       console.log('There was an error. The error was logged to scraper-error.log');
+     });
    }
   });
     }
@@ -89,5 +86,13 @@ request(url, function (error, response, body) {
   else {
     console.log(error.message);
     console.log('The scraper could not not scrape data from' + url + 'there is either a problem with your internet connection or the site may be down');
+    var loggerDate = new Date();
+    // create message as a variable
+    var errLog = '[' + loggerDate + '] ' + error.message + '\n';
+    // when the error occurs, log that to the error logger file
+    fs.appendFile('scraper-error.log', errLog, function (err) {
+      if (err) throw err;
+      console.log('There was an error. The error was logged to scraper-error.log');
+    });
     }
 });

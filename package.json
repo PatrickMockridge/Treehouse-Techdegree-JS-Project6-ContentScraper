@@ -1,9 +1,10 @@
 {
   "name": "project6-contentscraper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Content scraping package for the website shirts4mike.com",
   "main": "scraper.js",
   "scripts": {
+    "lint": "eslint **.js; exit 0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,6 +15,8 @@
     "fs": "0.0.2",
     "jquery": "^2.2.4",
     "json2csv": "^3.4.2",
-    "request": "^2.72.0"
+    "moment": "^2.14.1",
+    "request": "^2.72.0",
+    "winston": "^2.2.0"
   }
 }
